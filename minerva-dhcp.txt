@@ -1,0 +1,11 @@
+# Minerva DHCP Configuration
+subnet 102.92.31.0 netmask 255.255.255.0 {
+    range 102.92.31.50 102.92.31.100;
+    option routers 102.92.31.1;
+    option broadcast-address 102.92.31.255;
+    option domain-name-servers 55.161.97.10;
+    default-lease-time 600;
+    max-lease-time 7200;
+}
+
+# leto remains statically addressed and outside the DHCP pool.
