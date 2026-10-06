@@ -1,0 +1,55 @@
+# R3 iptables Stateful Firewall
+iptables -F
+iptables -X
+iptables -P INPUT DROP
+iptables -P OUTPUT DROP
+iptables -P FORWARD DROP
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Public DMZ services
+iptables -A FORWARD -p udp --dport 53 -d 66.125.20.10 -j ACCEPT
+iptables -A FORWARD -p tcp --dport 53 -d 66.125.20.10 -j ACCEPT
+iptables -A FORWARD -p tcp --dport 80 -d 66.125.20.11 -j ACCEPT
+iptables -A FORWARD -p tcp --dport 25 -d 66.125.20.12 -j ACCEPT
+
+# DMZ service-specific outbound traffic
+iptables -A FORWARD -s 66.125.20.10 -p udp --dport 53 -o eth3 -j ACCEPT
+iptables -A FORWARD -s 66.125.20.10 -p tcp --dport 53 -o eth3 -j ACCEPT
+iptables -A FORWARD -s 66.125.20.11 -p tcp --dport 80 -o eth3 -j ACCEPT
+iptables -A FORWARD -s 66.125.20.12 -p tcp --dport 25 -o eth3 -j ACCEPT
+
+# Internal -> DMZ
+iptables -A FORWARD -s 66.125.109.0/24 -d 66.125.20.0/24 -j ACCEPT
+iptables -A FORWARD -s 66.125.137.0/24 -d 66.125.20.0/24 -j ACCEPT
+iptables -A FORWARD -s 66.125.214.0/24 -d 66.125.20.0/24 -j ACCEPT
+
+# Internal <-> internal
+iptables -A FORWARD -s 66.125.109.0/24 -d 66.125.214.0/24 -j ACCEPT
+iptables -A FORWARD -s 66.125.214.0/24 -d 66.125.109.0/24 -j ACCEPT
+iptables -A FORWARD -s 66.125.109.0/24 -d 66.125.137.0/24 -j ACCEPT
+iptables -A FORWARD -s 66.125.137.0/24 -d 66.125.109.0/24 -j ACCEPT
+iptables -A FORWARD -s 66.125.214.0/24 -d 66.125.137.0/24 -j ACCEPT
+iptables -A FORWARD -s 66.125.137.0/24 -d 66.125.214.0/24 -j ACCEPT
+
+# Internal -> external
+iptables -A FORWARD -s 66.125.109.0/24 -o eth3 -j ACCEPT
+iptables -A FORWARD -s 66.125.137.0/24 -o eth3 -j ACCEPT
+iptables -A FORWARD -s 66.125.214.0/24 -o eth3 -j ACCEPT
+
+# SSH to R3 only from client subnet
+iptables -A INPUT -p tcp --dport 22 -s 66.125.109.0/24 -j ACCEPT
+iptables -A OUTPUT -p tcp --sport 22 -d 66.125.109.0/24 -j ACCEPT
+iptables -A INPUT -p tcp --dport 22 -j DROP
+
+# ICMP
+iptables -A OUTPUT -p icmp --icmp-type echo-request -d 66.125.0.0/16 -j ACCEPT
+iptables -A INPUT -p icmp --icmp-type echo-reply -s 66.125.0.0/16 -j ACCEPT
+iptables -A INPUT -p icmp --icmp-type echo-request -s 66.125.0.0/16 -j ACCEPT
+iptables -A OUTPUT -p icmp --icmp-type echo-reply -d 66.125.0.0/16 -j ACCEPT
+
+# Drop logging
+iptables -A INPUT -j LOG --log-prefix "DROP_INPUT: " --log-level 4
+iptables -A OUTPUT -j LOG --log-prefix "DROP_OUTPUT: " --log-level 4
+iptables -A FORWARD -j LOG --log-prefix "DROP_FORWARD: " --log-level 4

@@ -1,0 +1,2 @@
+# Minerva Static Route
+/sbin/ip route add default via 184.209.156.1

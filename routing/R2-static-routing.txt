@@ -1,0 +1,9 @@
+# R2 Static Routes
+/sbin/ip route add 66.125.109.0/24 via 66.125.241.1
+/sbin/ip route add 66.125.137.0/24 via 66.125.85.1
+/sbin/ip route add 66.125.20.0/24 via 66.125.248.1
+/sbin/ip route add 55.161.97.0/24 via 66.125.248.1
+/sbin/ip route add 102.92.31.0/24 via 66.125.248.1
+/sbin/ip route add 102.92.83.0/24 via 66.125.248.1
+/sbin/ip route add 66.125.101.0/24 via 66.125.85.1
+/sbin/ip route add 66.125.227.0/24 via 66.125.248.1
