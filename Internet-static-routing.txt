@@ -1,0 +1,10 @@
+# Internet Router Static Routes
+/sbin/ip route add 66.125.20.0/24 via 106.58.177.1
+/sbin/ip route add 66.125.214.0/24 via 106.58.177.1
+/sbin/ip route add 66.125.137.0/24 via 106.58.177.1
+/sbin/ip route add 66.125.109.0/24 via 106.58.177.1
+/sbin/ip route add 66.125.227.0/24 via 106.58.177.1
+/sbin/ip route add 66.125.248.0/24 via 106.58.177.1
+/sbin/ip route add 66.125.0.0/24 via 106.58.177.1
+/sbin/ip route add 102.92.31.0/24 via 184.209.156.2
+/sbin/ip route add 102.92.83.0/24 via 184.209.156.2
